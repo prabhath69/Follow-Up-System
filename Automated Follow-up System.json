@@ -1,0 +1,1040 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "79e486ac-01e4-4f49-b40a-972e2acc747d",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1x6Khb7Em6zwzJc0YAO6otQQGINzincsVCtzGko_M3Wg",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Last Contacted Form",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1x6Khb7Em6zwzJc0YAO6otQQGINzincsVCtzGko_M3Wg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        220,
+        0
+      ],
+      "id": "0ebf6dd0-419f-4afb-a0b9-efd5e7eb786f",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hx3jKnqSPDOhxaIR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Number of days gone by'] }}",
+                    "rightValue": 4,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "a7377639-9435-4590-a1e2-7c4df22b5f3e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "504e197e-d90e-49db-a731-8de2259b8e61",
+                    "leftValue": "={{ $json['Number of days gone by'] }}",
+                    "rightValue": 9,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dc40f2d6-90b2-4234-ac78-f7561c5a973c",
+                    "leftValue": "={{ $json['Number of days gone by'] }}",
+                    "rightValue": 16,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "0bf9b534-e42c-40f6-ba8a-6297c290789d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "filters": {
+          "sender": "={{ $json.Email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1020,
+        -400
+      ],
+      "id": "a118eb5a-1d57-4c9e-9959-567fa6fcceae",
+      "name": "Gmail",
+      "webhookId": "99b87e9c-0dbc-4599-840d-e949b9b5188d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "15c1133c-d4c7-4a7a-bd8a-f4b123eec94c",
+              "name": "Body",
+              "value": "={{ $json.snippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1240,
+        -400
+      ],
+      "id": "d8f50186-58cc-4d5e-98c3-ecece2331651",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        -200
+      ],
+      "id": "77890095-688d-4219-b1dd-b22986b20efd",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Dq5qLoO3kBCwckuO",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Follow up after 4 days",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2080,
+        -400
+      ],
+      "id": "151f44b8-5ffa-4612-9ef1-f7cc5580e042",
+      "name": "Gmail1",
+      "webhookId": "a5843c66-2b71-4db1-b452-bbedfa6e997a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e0a7adc4-d20b-4df7-8b9f-3823eb35e738",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "No reply",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c53a7001-08c1-45eb-8e9c-b1007bc717c6",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "No reply.",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1820,
+        -400
+      ],
+      "id": "9305a24f-79b2-4413-a3ba-b3c8ebb31349",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        800,
+        -400
+      ],
+      "id": "94348f79-3655-4d7d-9beb-2c202ed3a037",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "filters": {
+          "sender": "={{ $json.Email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1020,
+        -40
+      ],
+      "id": "6f87b4d3-88d1-4b80-a39b-c3dcc66c9fb5",
+      "name": "Gmail2",
+      "webhookId": "99b87e9c-0dbc-4599-840d-e949b9b5188d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "15c1133c-d4c7-4a7a-bd8a-f4b123eec94c",
+              "name": "Body",
+              "value": "={{ $json.snippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1240,
+        -40
+      ],
+      "id": "6cdd88e3-fe3e-49eb-8e86-c3a7ffda06ce",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        180
+      ],
+      "id": "d05bac07-2a59-414b-92a7-9a835e3720d8",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "Dq5qLoO3kBCwckuO",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Follow up after 9 days",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2080,
+        -40
+      ],
+      "id": "23e3a5ba-8947-40fa-b2a1-8ec57c6ffec4",
+      "name": "Gmail3",
+      "webhookId": "a5843c66-2b71-4db1-b452-bbedfa6e997a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e0a7adc4-d20b-4df7-8b9f-3823eb35e738",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "No reply",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c53a7001-08c1-45eb-8e9c-b1007bc717c6",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "No reply.",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1820,
+        -40
+      ],
+      "id": "31afa357-8c67-4ea9-a2e6-8a8e053839e4",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        800,
+        -40
+      ],
+      "id": "2d4a8288-7ecd-42f0-93df-e7ebd6373183",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "filters": {
+          "sender": "={{ $json.Email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1020,
+        360
+      ],
+      "id": "12ece3c3-f67e-4f2e-8171-4b5f9ab2d0c7",
+      "name": "Gmail4",
+      "webhookId": "99b87e9c-0dbc-4599-840d-e949b9b5188d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "15c1133c-d4c7-4a7a-bd8a-f4b123eec94c",
+              "name": "Body",
+              "value": "={{ $json.snippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1240,
+        360
+      ],
+      "id": "60a23798-342e-4f48-b398-30b47dab294c",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        580
+      ],
+      "id": "7e8bd0a8-29d4-4d45-b778-c29690e20d93",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "Dq5qLoO3kBCwckuO",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Follow up after 16 days",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2080,
+        360
+      ],
+      "id": "749958f0-6b60-4a10-956d-9c3b7ca2f255",
+      "name": "Gmail5",
+      "webhookId": "a5843c66-2b71-4db1-b452-bbedfa6e997a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e0a7adc4-d20b-4df7-8b9f-3823eb35e738",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "No reply",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c53a7001-08c1-45eb-8e9c-b1007bc717c6",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "No reply.",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1820,
+        360
+      ],
+      "id": "5c0136f6-7aee-4789-9309-1ca7a3eeb9eb",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        800,
+        360
+      ],
+      "id": "cc622d34-9d62-488b-9e38-3f07285da5d2",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=The previous message from the client is :   {{ $json.Body }}\nClient Name: {{ $('Switch').item.json['First Name'] }}\n\n\nAlso include in the message that if you are free and interested, we will plan a quick visit to the site physically and confirm later on.",
+        "options": {
+          "systemMessage": "You are a AI assistant for Mohan - a real estate broker. Your job is to read the previous message and send a follow-up message for the potential client from his previous message.\nIf the previous message shows a part of liking or interest, follow-up positively, or if it is negative and says directly I'm not interested or don't message me, then do not message and give the output as just \"No reply\".\n\nJust give the email message as output no additional matter like: \"Here's a follow up message\" or \"Here is your output\" and also, no subject or anything. Just the matter in the body of email please\n\nImportant: Remember you are sending this mail to the client after 4 days. So send message  accordingly, and just remind them of you, and don't be like a fresh reply to previous message. \n\n\nIf the previous message is not interested or have any real queries that you can't answer, do not answer to that mail.\n\nIf the message says they are interested completely and want to discuss it further and wanted to meet or something with that kind of positiveness, activate the tool \"send owner\".\n\n\nFollow any instructions given in the User prompt."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1460,
+        -400
+      ],
+      "id": "b0f7c8b5-d97b-45e8-a80d-e4b39827804e",
+      "name": "4 days follow up email writer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=The previous message from the client is :   {{ $json.Body }}\nClient Name: {{ $('Switch').item.json['First Name'] }}\n\n\nAlso remind them, it's been a long time, and if you have any other preferences, I got a new set of listing of land, so if you are interested we can either look into them.",
+        "options": {
+          "systemMessage": "You are a AI assistant for Mohan - a real estate broker. Your job is to read the previous message and send a follow-up message for the potential client from his previous message.\nIf the previous message shows a part of liking or interest, follow-up positively, or if it is negative and says directly I'm not interested or don't message me, then do not message and give the output as just \"No reply\".\n\nJust give the email message as output no additional matter like: \"Here's a follow up message\" or \"Here is your output\" and also, no subject or anything. Just the matter in the body of email please\n\nRemember you are sending this mail to the client after 9 days, this will be the second follow-up mail that we are sending to the client. So send message  accordingly, and just remind them of you, and don't be like a fresh reply to previous message. \n\n\nIf the previous message is not interested or have any real queries that you can't answer, do not answer to that mail."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1460,
+        -40
+      ],
+      "id": "aa77726a-c432-4067-b0d6-df75f52a099d",
+      "name": "9 days follow up email writer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=The previous message from the client is :   {{ $json.Body }}\nClient Name: {{ $('Switch').item.json['First Name'] }}\n\nSurely mention that it's been too long since we last connected if there was no reply. And directly ask him if he is genuinely interested or not.",
+        "options": {
+          "systemMessage": "You are a AI assistant for Mohan - a real estate broker. Your job is to read the previous message and send a follow-up message for the potential client from his previous message.\nIf the previous message shows a part of liking or interest, follow-up positively, or if it is negative and says directly I'm not interested or don't message me, then do not message and give the output as just \"No reply\".\n\nJust give the email message as output no additional matter like: \"Here's a follow up message\" or \"Here is your output\" and also, no subject or anything. Just the matter in the body of email please\n\nRemember you are sending this mail to the client after 16 days, this will be the third and final follow-up mail that we are sending to the client. So send message  accordingly, and just remind them of you, and don't be like a fresh reply to previous message. \n\n\nIf the previous message is not interested or have any real queries that you can't answer, do not answer to that mail."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1460,
+        360
+      ],
+      "id": "fae96abf-9ec5-451e-a159-05420a56c8f4",
+      "name": "16 days follow up email writer"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "No more messages will be sent",
+        "emailType": "text",
+        "message": "Okay, I completely get it! I won't be sending you any messages further!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2060,
+        -560
+      ],
+      "id": "18cb3e9f-9ede-455a-831c-334b477dd6ab",
+      "name": "Gmail6",
+      "webhookId": "925093ea-5fea-4a38-ada8-8632207b30e2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "No more messages will be sent",
+        "emailType": "text",
+        "message": "Okay, I completely get it! I won't be sending you any messages further!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2080,
+        -180
+      ],
+      "id": "05b52dcc-d230-47b8-a16a-5f8394334142",
+      "name": "Gmail7",
+      "webhookId": "925093ea-5fea-4a38-ada8-8632207b30e2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "No more messages will be sent",
+        "emailType": "text",
+        "message": "Okay, I completely get it! I won't be sending you any messages further!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2080,
+        200
+      ],
+      "id": "bb8b6a34-41ca-4485-959e-a83a7d18dc80",
+      "name": "Gmail8",
+      "webhookId": "925093ea-5fea-4a38-ada8-8632207b30e2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JrlBdWowAz0bsDnZ",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "4 days follow up email writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "4 days follow up email writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Gmail6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "9 days follow up email writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "9 days follow up email writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Gmail7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "16 days follow up email writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "16 days follow up email writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail5": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Gmail8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Gmail4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4 days follow up email writer": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9 days follow up email writer": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "16 days follow up email writer": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail6": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail7": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail8": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "afd8aece-2c8e-4267-8e2c-b7ea4e57d844",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bb15867eb79ce1e55fdb60d950a74a97a22f15103b52b2440a52acbf0f1c0735"
+  },
+  "id": "rV8IIUXv5r0C5hyr",
+  "tags": []
+}
